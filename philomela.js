@@ -1,10 +1,19 @@
+const PHILOMELA = {
+  TOKEN: PropertiesService.getScriptProperties().getProperty('PHILOMELA_TOKEN')
+};
+
 const DISCORD = {
   INCOMING_URL: PropertiesService.getScriptProperties().getProperty('DISCORD_INCOMING_URL')
 };
 
-const test = () => {
-  const message = Browser.inputBox('Please input for post message to Discord');
-  postMessageToDiscord(message);
+const doPost = e => {
+  if(e.parameter.token !== PHILOMELA.TOKEN) {
+    return;
+  }
+
+  e.parameter.text.match(/<.+>/)
+                  .map(t => t.replace('<', '').replace('>', ''))
+                  .forEach(t => postMessageToDiscord(t));
 }
 
 const postMessageToDiscord = message => {
