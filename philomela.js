@@ -6,14 +6,28 @@ const DISCORD = {
   INCOMING_URL: PropertiesService.getScriptProperties().getProperty('DISCORD_INCOMING_URL')
 };
 
+const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+const memoriesSheet = spreadSheet.getSheetByName('memories');
+
 const doPost = e => {
   if(e.parameter.token !== PHILOMELA.TOKEN) {
     return;
   }
 
-  e.parameter.text.match(/<.+>/)
+  const memoryUrls = memoriesSheet.getDataRange()
+                                  .getValues()
+                                  .map(row => new MemoryRow(row))
+                                  .map(row => row.url);
+
+  e.parameter.text.match(/<.+>/g)
                   .map(t => t.replace('<', '').replace('>', ''))
-                  .forEach(t => postMessageToDiscord(t));
+                  .forEach(t => {
+                    if (!memoryUrls.includes(t)) {
+                      memoriesSheet.appendRow(new MemoryRow({ url: t }).toArray());
+                    }
+
+                    postMessageToDiscord(t);
+                  });
 }
 
 const postMessageToDiscord = message => {
