@@ -10,7 +10,9 @@ const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 const memoriesSheet = spreadSheet.getSheetByName('memories');
 
 const doPost = e => {
-  if(e.parameter.token !== PHILOMELA.TOKEN) {
+  const requestParameter = requestBodyToHash(e.postData.contents);
+
+  if(requestParameter.token !== PHILOMELA.TOKEN) {
     return;
   }
 
@@ -19,7 +21,8 @@ const doPost = e => {
                                   .map(row => new MemoryRow(row))
                                   .map(row => row.url);
 
-  e.parameter.text.match(/<.+>/g)
+  requestParameter.text
+                  .match(/<.+>/g)
                   .map(t => t.replace('<', '').replace('>', ''))
                   .forEach(t => {
                     if (!memoryUrls.includes(t)) {
@@ -38,4 +41,13 @@ const postMessageToDiscord = message => {
   };
 
   UrlFetchApp.fetch(DISCORD.INCOMING_URL, options);
+}
+
+const requestBodyToHash = body => {
+  return body.split('&').reduce((result, parameter) => {
+    const [key, value] = parameter.split('=');
+    result[key] = decodeURIComponent(value);
+
+    return result;
+  }, {});
 }
