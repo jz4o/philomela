@@ -6,6 +6,8 @@ const DISCORD = {
   INCOMING_URL: PropertiesService.getScriptProperties().getProperty('DISCORD_INCOMING_URL')
 };
 
+const VIDEO_URL_PREFIX = 'https://www.youtube.com/watch';
+
 const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 const memoriesSheet = spreadSheet.getSheetByName('memories');
 
@@ -24,6 +26,7 @@ const doPost = e => {
   requestParameter.text
                   .match(/<.+>/g)
                   .map(t => t.replace('<', '').replace('>', ''))
+                  .filter(t => t.startsWith(VIDEO_URL_PREFIX))
                   .forEach(t => {
                     if (!memoryUrls.includes(t)) {
                       memoriesSheet.appendRow(new MemoryRow({ url: t }).toArray());
