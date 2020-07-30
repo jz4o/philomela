@@ -11,6 +11,25 @@ const VIDEO_URL_PREFIX = 'https://www.youtube.com/watch';
 const spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
 const memoriesSheet = spreadSheet.getSheetByName('memories');
 
+const doGet = e => {
+  if (e.parameter.token !== PHILOMELA.TOKEN) {
+    return;
+  }
+
+  switch (e.parameter.action) {
+    case 'memories':
+      const memories = memoriesSheet.getDataRange()
+                                    .getValues()
+                                    .map(row => new MemoryRow(row));
+
+      const response = ContentService.createTextOutput();
+      response.setMimeType(ContentService.MimeType.JAVASCRIPT);
+      response.setContent(JSON.stringify({ memories: memories }));
+
+      return response;
+  }
+}
+
 const doPost = e => {
   const requestParameter = requestBodyToHash(e.postData.contents);
 
