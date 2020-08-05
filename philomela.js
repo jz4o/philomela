@@ -26,6 +26,11 @@ const doGet = e => {
         memories = shuffle(memories);
       }
 
+      const limit = Number(e.parameter.limit);
+      if (limit !== NaN && limit >= 0) {
+        memories = memories.slice(0, limit);
+      }
+
       const response = ContentService.createTextOutput();
       response.setMimeType(ContentService.MimeType.JAVASCRIPT);
       response.setContent(JSON.stringify({ memories: memories }));
