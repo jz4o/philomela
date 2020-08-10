@@ -1,7 +1,7 @@
 const requestBodyToHash = body => {
   return body.split('&').reduce((result, parameter) => {
     const [key, value] = parameter.split('=');
-    result[key] = decodeURIComponent(value);
+    result[key] = decodeURIComponent(value).replace(/%20/g, ' ');
 
     return result;
   }, {});
