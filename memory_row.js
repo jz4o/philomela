@@ -1,7 +1,8 @@
 class MemoryRow {
   static COLUMN_INDEXES() {
     return {
-      URL: 1
+      URL: 1,
+      TITLE: 2
     };
   }
 
@@ -18,6 +19,8 @@ class MemoryRow {
   }
 
   toArray() {
-    return [this.url];
+    return Object.keys(MemoryRow.COLUMN_INDEXES()).map(key => {
+      return this[key.toLowerCase()]
+    });
   }
 }
