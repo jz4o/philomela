@@ -46,6 +46,11 @@ const doPost = e => {
     return;
   }
 
+  if (requestParameter.text === 'updateUrlTitle') {
+    updateUrlTitle(requestParameter.url, requestParameter.title);
+    return;
+  }
+
   const memoryUrls = memoriesSheet.getDataRange()
                                   .getValues()
                                   .map(row => new MemoryRow(row))
@@ -72,4 +77,19 @@ const postMessageToDiscord = message => {
   };
 
   UrlFetchApp.fetch(DISCORD.INCOMING_URL, options);
+}
+
+const updateUrlTitle = (url, title) => {
+  const lastRow = memoriesSheet.getLastRow();
+  const lastColumn = Object.keys(MemoryRow.COLUMN_INDEXES()).length;
+  const dataRange = memoriesSheet.getRange(1, 1, lastRow, lastColumn);
+
+  const memoryRows = dataRange.getValues().map(row => new MemoryRow(row));
+  const targetMemoryRow = memoryRows.find(memoryRow => memoryRow.url === url);
+  if (!!targetMemoryRow) {
+    targetMemoryRow.title = title;
+  }
+
+  const memoryArrays = memoryRows.map(memoryRow => memoryRow.toArray());
+  dataRange.setValues(memoryArrays);
 }
