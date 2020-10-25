@@ -51,6 +51,11 @@ const doPost = e => {
     return;
   }
 
+  if (requestParameter.text === 'again') {
+    postMessageToDiscord(requestParameter.text);
+    return;
+  }
+
   const memoryUrls = memoriesSheet.getDataRange()
                                   .getValues()
                                   .map(row => new MemoryRow(row))
